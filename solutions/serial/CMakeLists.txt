@@ -1,0 +1,2 @@
+add_executable(serial_solution src/main.cpp)
+target_link_libraries(serial_solution common)

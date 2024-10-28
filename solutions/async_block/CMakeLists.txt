@@ -1,0 +1,2 @@
+add_executable(async_block_solution src/main.cpp)
+target_link_libraries(async_block_solution common)
