@@ -46,6 +46,37 @@ PGM PGMFromBoard(const Board& board) {
     return pgm;
 }
 
+PGM PGMFromCells(
+    const Cell* cells,
+    const int width,
+    const int height,
+    const int* edge_rows,
+    const int edge_row_count
+) {
+    PGM pgm{width, height, new u_int8_t[width * height]};
+    int edge_idx = 0;
+
+    for (int row = 0; row < height; ++row) {
+        const bool is_edge_row =
+            (edge_idx < edge_row_count && edge_rows[edge_idx] == row);
+
+        for (int col = 0; col < width; ++col) {
+            const int idx = row * width + col;
+            if (is_edge_row) {
+                pgm.data[idx] = cells[idx] == ALIVE ? 255 : 69;
+            } else {
+                pgm.data[idx] = cells[idx] == ALIVE ? 255 : 0;
+            }
+        }
+
+        if (is_edge_row) {
+            ++edge_idx;
+        }
+    }
+
+    return pgm;
+}
+
 void savePGM(
     const PGM& pgm,
     const std::string& output_directory,

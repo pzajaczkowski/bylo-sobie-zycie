@@ -26,6 +26,18 @@ int parseArguments(int argc, char* argv[], Args* args);
 
 PGM PGMFromBoard(const Board& board);
 
-void savePGM(const PGM& pgm, const std::string& output_directory, int iteration);
+PGM PGMFromCells(
+    const Cell* cells,
+    int width,
+    int height,
+    const int* edge_rows,
+    int edge_row_count
+);
+
+void savePGM(
+    const PGM& pgm,
+    const std::string& output_directory,
+    int iteration
+);
 
 #endif  // UTILS_HPP
