@@ -3,7 +3,9 @@
 int main(const int argc, char* argv[]) {
     // #1 Parse command-line arguments
     Args args;
-    parseArguments(argc, argv, &args);
+    if(!parseArguments(argc, argv, &args)) {
+        return 1;
+    }
 
     // #2 Initialize board
     Board board(args.matrixSize, args.matrixSize);
