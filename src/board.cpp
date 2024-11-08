@@ -1,5 +1,7 @@
 #include "../include/board.hpp"
 
+#include <cstring>
+
 // Constructors
 
 Board::Board(const int width, const int height)
@@ -43,7 +45,7 @@ void Board::Init(const BoardInitType type) {
                 setCell(i, height / 2, ALIVE);
             }
             for (int i = 0; i < width; ++i) {
-                setCell(height / 2, i, ALIVE);
+                setCell(width / 2, i, ALIVE);
             }
             break;
     }
@@ -118,4 +120,25 @@ void Board::updateBoard(const Cell* upperGhostRow, const Cell* lowerGhostRow) {
 
     delete[] board;
     board = newBoard;
+}
+
+// Static
+
+Board Board::createSubBoard(
+    const Board& board,
+    const int start_row,
+    const int rows_number
+) {
+    const Cell* parent_board_data = board.getBoard();
+    Board sub_board(board.getWidth(), rows_number);
+    Cell* sub_board_data = sub_board.getBoard();
+
+    const int offset = start_row * sub_board.width;
+    std::memcpy(
+        sub_board_data,
+        parent_board_data + offset,
+        sizeof(Cell) * sub_board.width * rows_number
+    );
+
+    return sub_board;
 }

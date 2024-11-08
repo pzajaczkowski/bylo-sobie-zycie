@@ -33,6 +33,11 @@ class Board {
     ) const;
     void updateBoard(const Cell* upperGhostRow, const Cell* lowerGhostRow);
 
+    // Static
+
+    static Board
+    createSubBoard(const Board& board, int start_row, int rows_number);
+
    private:
     int width;
     int height;
