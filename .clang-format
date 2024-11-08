@@ -7,7 +7,7 @@ BinPackArguments: false
 BinPackParameters: false
 
 ColumnLimit: 80
-IndentWidth: 2
+IndentWidth: 4
 
 AllowShortIfStatementsOnASingleLine: Never
 InsertBraces: true

@@ -7,7 +7,7 @@ default:
 
 format:
     @find \
-      common \
+      include solutions src \
       \( -name '*.c' \
       -o -name '*.cc' \
       -o -name '*.cpp' \
@@ -29,4 +29,4 @@ clean:
     rm -rf {{ build_debug_dir }}
 
 video images output:
-    @ffmpeg -framerate 10 -i {{ images }}/%d.pgm -c:v ffv1 {{ output }}.mkv
+    @ffmpeg -framerate 10 -i {{ images }}/snapshot_%d.pgm -c:v vp8 output.webm
