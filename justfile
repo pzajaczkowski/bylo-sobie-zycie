@@ -29,4 +29,4 @@ clean:
     rm -rf {{ build_debug_dir }}
 
 video images output:
-    @ffmpeg -framerate 10 -i {{ images }}/snapshot_%d.pgm -c:v vp8 output.webm
+    @ffmpeg -framerate 10 -i {{ images }}/snapshot_%d.pgm -c:v vp8 {{output}}.webm
