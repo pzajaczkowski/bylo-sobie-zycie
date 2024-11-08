@@ -21,42 +21,42 @@ int parseArguments(const int argc, char* argv[], Args* args) {
         return 1;
     }
 
-    args->matrixSize = atoi(argv[1]);
+    args->board_size = atoi(argv[1]);
     args->iterations = atoi(argv[2]);
-    args->initType = static_cast<BoardInitType>(atoi(argv[3]));
+    args->init_type = static_cast<BoardInitType>(atoi(argv[3]));
 
     if (argc > 4) {
-        args->outputDirectory = argv[4];
+        args->output_directory = argv[4];
         args->is_verbose = true;
     }
 
     return 0;
 }
 
-PBM PBMFromBoard(const Board& board) {
+PGM PGMFromBoard(const Board& board) {
     const int width = board.getWidth();
     const int height = board.getHeight();
-    const Cell* boardData = board.getBoard();
-    PBM pbm{width, height, new u_int8_t[width * height]};
+    const Cell* board_data = board.getBoard();
+    PGM pgm{width, height, new u_int8_t[width * height]};
 
     for (int i = 0; i < width * height; ++i) {
-        pbm.data[i] = boardData[i] == ALIVE ? 255 : 0;
+        pgm.data[i] = board_data[i] == ALIVE ? 255 : 0;
     }
 
-    return pbm;
+    return pgm;
 }
 
-void savePBM(
-    const PBM& pbm,
-    const std::string& outputDirectory,
+void savePGM(
+    const PGM& pgm,
+    const std::string& output_directory,
     int iteration
 ) {
-    std::filesystem::__cxx11::path snapshotsPath =
-        std::filesystem::__cxx11::path(outputDirectory);
-    create_directories(snapshotsPath);
+    std::filesystem::__cxx11::path snapshots_path =
+        std::filesystem::__cxx11::path(output_directory);
+    create_directories(snapshots_path);
 
     std::string filename =
-        (snapshotsPath / ("snapshot_" + std::to_string(iteration) + ".pgm"))
+        (snapshots_path / ("snapshot_" + std::to_string(iteration) + ".pgm"))
             .string();
 
     std::ofstream outfile(filename, std::ios::binary);
@@ -67,11 +67,11 @@ void savePBM(
     }
 
     // Header
-    outfile << "P5\n" << pbm.width << " " << pbm.height << "\n255\n";
+    outfile << "P5\n" << pgm.width << " " << pgm.height << "\n255\n";
     // Data
     outfile.write(
-        reinterpret_cast<const char*>(pbm.data),
-        pbm.width * pbm.height
+        reinterpret_cast<const char*>(pgm.data),
+        pgm.width * pgm.height
     );
     outfile.close();
 }

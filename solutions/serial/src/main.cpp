@@ -8,15 +8,15 @@ int main(const int argc, char* argv[]) {
     }
 
     // #2 Initialize board
-    Board board(args.matrixSize, args.matrixSize);
-    board.Init(args.initType);
+    Board board(args.board_size, args.board_size);
+    board.Init(args.init_type);
 
     // #3 Run iterations
     for (int i = 0; i < args.iterations; ++i) {
         // #4 Save snapshot if verbose
         if (args.is_verbose) {
-            PBM pbm = PBMFromBoard(board);
-            savePBM(pbm, args.outputDirectory, i);
+            PGM pbm = PGMFromBoard(board);
+            savePGM(pbm, args.output_directory, i);
         }
 
         // #5 Update board with empty ghost rows
@@ -24,7 +24,7 @@ int main(const int argc, char* argv[]) {
     }
 
     if (args.is_verbose) {
-        const PBM pbm = PBMFromBoard(board);
-        savePBM(pbm, args.outputDirectory, args.iterations);
+        const PGM pbm = PGMFromBoard(board);
+        savePGM(pbm, args.output_directory, args.iterations);
     }
 }
