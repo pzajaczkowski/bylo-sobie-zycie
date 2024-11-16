@@ -82,8 +82,8 @@ void savePGM(
     const std::string& output_directory,
     int iteration
 ) {
-    std::filesystem::__cxx11::path snapshots_path =
-        std::filesystem::__cxx11::path(output_directory);
+    std::filesystem::path snapshots_path =
+        std::filesystem::path(output_directory);
     create_directories(snapshots_path);
 
     std::string filename =

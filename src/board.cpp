@@ -11,18 +11,23 @@ Board::~Board() { delete[] board; }
 
 // Accessors
 
-Cell* Board::getRow(const int y) const { return &board[y * width]; }
+Cell *Board::getRow(const int y) const { return &board[y * width]; }
 
 int Board::getWidth() const { return width; }
 
 int Board::getHeight() const { return height; }
 
-Cell* Board::getBoard() const { return board; }
+Cell *Board::getBoard() const { return board; }
 
 // Mutators
 
 void Board::setCell(const int x, const int y, const Cell value) {
     board[y * width + x] = value;
+}
+
+void Board::setBoard(Cell *newBoard) {
+    delete[] board;
+    board = newBoard;
 }
 
 void Board::Init(const BoardInitType type) {
@@ -52,10 +57,10 @@ void Board::Init(const BoardInitType type) {
 }
 
 void Board::updateRow(
-    const Cell* prevRow,
-    const Cell* currRow,
-    const Cell* nextRow,
-    Cell* newRow
+    const Cell *prevRow,
+    const Cell *currRow,
+    const Cell *nextRow,
+    Cell *newRow
 ) const {
     for (int column = 0; column < width; ++column) {
         int neighbors = 0;
@@ -89,8 +94,8 @@ void Board::updateRow(
     }
 }
 
-void Board::updateBoard(const Cell* upperGhostRow, const Cell* lowerGhostRow) {
-    Cell* newBoard = new Cell[width * height]{};
+void Board::updateBoard(const Cell *upperGhostRow, const Cell *lowerGhostRow) {
+    Cell *newBoard = new Cell[width * height]{};
 
     // first row
     updateRow(
@@ -122,16 +127,57 @@ void Board::updateBoard(const Cell* upperGhostRow, const Cell* lowerGhostRow) {
     board = newBoard;
 }
 
+Cell *Board::updateBoardWithoutEdges() {
+    Cell *newBoard = new Cell[width * height]{};
+
+    // middle rows
+    for (int i = 1; i < height - 1; ++i) {
+        updateRow(
+            &board[(i - 1) * width],
+            &board[i * width],
+            &board[(i + 1) * width],
+            &newBoard[i * width]
+        );
+    }
+
+    return newBoard;
+}
+
+void Board::updateBoardEdges(
+    const Cell *upperGhostRow,
+    const Cell *lowerGhostRow,
+    Cell *newBoard
+) {
+    // first row
+    updateRow(
+        upperGhostRow,
+        &board[0 * width],
+        &board[1 * width],
+        &newBoard[0]
+    );
+
+    // last row
+    updateRow(
+        &board[(height - 2) * width],
+        &board[(height - 1) * width],
+        lowerGhostRow,
+        &newBoard[(height - 1) * width]
+    );
+
+    delete[] board;
+    board = newBoard;
+}
+
 // Static
 
 Board Board::createSubBoard(
-    const Board& board,
+    const Board &board,
     const int start_row,
     const int rows_number
 ) {
-    const Cell* parent_board_data = board.getBoard();
+    const Cell *parent_board_data = board.getBoard();
     Board sub_board(board.getWidth(), rows_number);
-    Cell* sub_board_data = sub_board.getBoard();
+    Cell *sub_board_data = sub_board.getBoard();
 
     const int offset = start_row * sub_board.width;
     std::memcpy(

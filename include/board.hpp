@@ -14,34 +14,51 @@ class Board {
    public:
     // Constructors and destructor
     Board(int width, int height);
+
     ~Board();
 
     // Accessors
-    [[nodiscard]] Cell* getRow(int y) const;
+    [[nodiscard]] Cell *getRow(int y) const;
+
     [[nodiscard]] int getWidth() const;
+
     [[nodiscard]] int getHeight() const;
-    [[nodiscard]] Cell* getBoard() const;
+
+    [[nodiscard]] Cell *getBoard() const;
 
     // Mutators
     void setCell(int x, int y, Cell value);
+
+    void setBoard(Cell *newBoard);
+
     void Init(BoardInitType type);
+
     void updateRow(
-        const Cell* prevRow,
-        const Cell* currRow,
-        const Cell* nextRow,
-        Cell* newRow
+        const Cell *prevRow,
+        const Cell *currRow,
+        const Cell *nextRow,
+        Cell *newRow
     ) const;
-    void updateBoard(const Cell* upperGhostRow, const Cell* lowerGhostRow);
+
+    void updateBoard(const Cell *upperGhostRow, const Cell *lowerGhostRow);
+
+    Cell *updateBoardWithoutEdges();
+
+    void updateBoardEdges(
+        const Cell *upperGhostRow,
+        const Cell *lowerGhostRow,
+        Cell *newBoard
+    );
 
     // Static
 
     static Board
-    createSubBoard(const Board& board, int start_row, int rows_number);
+    createSubBoard(const Board &board, int start_row, int rows_number);
 
    private:
     int width;
     int height;
-    Cell* board;
+    Cell *board;
 };
 
 #endif  // BOARD_HPP
