@@ -21,10 +21,10 @@ build:
     @cmake --build {{ build_debug_dir }}
 
 build-openmp:
-    @cmake -B {{ build_debug_dir }} \
-           -DCMAKE_BUILD_TYPE=Debug \
+    @cmake -DCMAKE_BUILD_TYPE=Debug \
+           -DUSE_OPENMP=ON \
            -DCMAKE_CXX_FLAGS="-fopenmp" \
-           -DCMAKE_C_FLAGS="-fopenmp"
+           -B {{ build_debug_dir }}
     @cmake --build {{ build_debug_dir }}
 
 release:
@@ -32,10 +32,10 @@ release:
     @cmake --build {{ build_release_dir }}
 
 release-openmp:
-    @cmake -B {{ build_release_dir }} \
-           -DCMAKE_BUILD_TYPE=Release \
+    @cmake -DCMAKE_BUILD_TYPE=Release \
+           -DUSE_OPENMP=ON \
            -DCMAKE_CXX_FLAGS="-fopenmp" \
-           -DCMAKE_C_FLAGS="-fopenmp"
+           -B {{ build_release_dir }}
     @cmake --build {{ build_release_dir }}
 
 clean:

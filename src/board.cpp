@@ -1,6 +1,9 @@
 #include "../include/board.hpp"
 
 #include <cstring>
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 // Constructors
 
@@ -106,6 +109,7 @@ void Board::updateBoard(const Cell *upperGhostRow, const Cell *lowerGhostRow) {
     );
 
     // middle rows
+#pragma omp parallel for
     for (int i = 1; i < height - 1; ++i) {
         updateRow(
             &board[(i - 1) * width],
@@ -131,6 +135,7 @@ Cell *Board::updateBoardWithoutEdges() {
     Cell *newBoard = new Cell[width * height]{};
 
     // middle rows
+#pragma omp parallel for
     for (int i = 1; i < height - 1; ++i) {
         updateRow(
             &board[(i - 1) * width],
