@@ -1,6 +1,7 @@
 #include "../include/board.hpp"
 
 #include <cstring>
+#include <new>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -8,9 +9,9 @@
 // Constructors
 
 Board::Board(const int width, const int height)
-    : width(width), height(height), board(new Cell[width * height]{}) {}
+    : width(width), height(height), board(new (std::align_val_t(64)) Cell[width * height]{}) {}
 
-Board::~Board() { delete[] board; }
+Board::~Board() { operator delete[](board, std::align_val_t(64)); }
 
 // Accessors
 
@@ -29,7 +30,7 @@ void Board::setCell(const int x, const int y, const Cell value) {
 }
 
 void Board::setBoard(Cell *newBoard) {
-    delete[] board;
+    operator delete[](board, std::align_val_t(64));
     board = newBoard;
 }
 
@@ -98,7 +99,7 @@ void Board::updateRow(
 }
 
 void Board::updateBoard(const Cell *upperGhostRow, const Cell *lowerGhostRow) {
-    Cell *newBoard = new Cell[width * height]{};
+    Cell *newBoard = new (std::align_val_t(64)) Cell[width * height]{};
 
     // first row
     updateRow(
@@ -127,12 +128,12 @@ void Board::updateBoard(const Cell *upperGhostRow, const Cell *lowerGhostRow) {
         &newBoard[(height - 1) * width]
     );
 
-    delete[] board;
+    operator delete[](board, std::align_val_t(64));
     board = newBoard;
 }
 
 Cell *Board::updateBoardWithoutEdges() {
-    Cell *newBoard = new Cell[width * height]{};
+    Cell *newBoard = new (std::align_val_t(64)) Cell[width * height]{};
 
     // middle rows
 #pragma omp parallel for
@@ -169,7 +170,7 @@ void Board::updateBoardEdges(
         &newBoard[(height - 1) * width]
     );
 
-    delete[] board;
+    operator delete[](board, std::align_val_t(64));
     board = newBoard;
 }
 

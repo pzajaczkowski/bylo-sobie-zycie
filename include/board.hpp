@@ -58,7 +58,7 @@ class Board {
    private:
     int width;
     int height;
-    Cell *board;
+    alignas(64) Cell *board;
 };
 
 #endif  // BOARD_HPP
