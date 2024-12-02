@@ -2,6 +2,7 @@
 
 #include <cstring>
 #include <new>
+#include <utility>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -9,9 +10,14 @@
 // Constructors
 
 Board::Board(const int width, const int height)
-    : width(width), height(height), board(new (std::align_val_t(64)) Cell[width * height]{}) {}
+    : width(width), height(height), board(new(std::align_val_t(64)) Cell[width * height]{}),
+      new_board(new(std::align_val_t(64)) Cell[width * height]{}) {
+}
 
-Board::~Board() { operator delete[](board, std::align_val_t(64)); }
+Board::~Board() {
+    operator delete[](board, std::align_val_t(64));
+    operator delete[](new_board, std::align_val_t(64));
+}
 
 // Accessors
 
@@ -25,13 +31,13 @@ Cell *Board::getBoard() const { return board; }
 
 // Mutators
 
-void Board::setCell(const int x, const int y, const Cell value) {
+inline void Board::setCell(const int x, const int y, const Cell value) {
     board[y * width + x] = value;
 }
 
-void Board::setBoard(Cell *newBoard) {
+void Board::setBoard(Cell *new_board) {
     operator delete[](board, std::align_val_t(64));
-    board = newBoard;
+    board = new_board;
 }
 
 void Board::Init(const BoardInitType type) {
@@ -60,7 +66,7 @@ void Board::Init(const BoardInitType type) {
     }
 }
 
-void Board::updateRow(
+inline void Board::updateRow(
     const Cell *prevRow,
     const Cell *currRow,
     const Cell *nextRow,
@@ -99,24 +105,22 @@ void Board::updateRow(
 }
 
 void Board::updateBoard(const Cell *upperGhostRow, const Cell *lowerGhostRow) {
-    Cell *newBoard = new (std::align_val_t(64)) Cell[width * height]{};
-
     // first row
     updateRow(
         upperGhostRow,
         &board[0 * width],
         &board[1 * width],
-        &newBoard[0]
+        &new_board[0]
     );
 
     // middle rows
-#pragma omp parallel for
+#pragma omp parallel for schedule(static)
     for (int i = 1; i < height - 1; ++i) {
         updateRow(
             &board[(i - 1) * width],
             &board[i * width],
             &board[(i + 1) * width],
-            &newBoard[i * width]
+            &new_board[i * width]
         );
     }
 
@@ -125,41 +129,36 @@ void Board::updateBoard(const Cell *upperGhostRow, const Cell *lowerGhostRow) {
         &board[(height - 2) * width],
         &board[(height - 1) * width],
         lowerGhostRow,
-        &newBoard[(height - 1) * width]
+        &new_board[(height - 1) * width]
     );
 
-    operator delete[](board, std::align_val_t(64));
-    board = newBoard;
+    std::swap(board, new_board);
 }
 
-Cell *Board::updateBoardWithoutEdges() {
-    Cell *newBoard = new (std::align_val_t(64)) Cell[width * height]{};
+void Board::updateBoardWithoutEdges() {
 
     // middle rows
-#pragma omp parallel for
+#pragma omp parallel for schedule(static)
     for (int i = 1; i < height - 1; ++i) {
         updateRow(
             &board[(i - 1) * width],
             &board[i * width],
             &board[(i + 1) * width],
-            &newBoard[i * width]
+            &new_board[i * width]
         );
     }
-
-    return newBoard;
 }
 
 void Board::updateBoardEdges(
     const Cell *upperGhostRow,
-    const Cell *lowerGhostRow,
-    Cell *newBoard
+    const Cell *lowerGhostRow
 ) {
     // first row
     updateRow(
         upperGhostRow,
         &board[0 * width],
         &board[1 * width],
-        &newBoard[0]
+        &new_board[0]
     );
 
     // last row
@@ -167,11 +166,10 @@ void Board::updateBoardEdges(
         &board[(height - 2) * width],
         &board[(height - 1) * width],
         lowerGhostRow,
-        &newBoard[(height - 1) * width]
+        &new_board[(height - 1) * width]
     );
 
-    operator delete[](board, std::align_val_t(64));
-    board = newBoard;
+    std::swap(board, new_board);
 }
 
 // Static

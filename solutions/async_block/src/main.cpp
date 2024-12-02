@@ -108,8 +108,8 @@ int main(int argc, char *argv[]) {
 
     for (int iter = 0; iter < iterations; ++iter) {
         // #5.2 Exchange data with neighbors
-        Cell *upper_ghost_row = new Cell[board_size]{};
-        Cell *lower_ghost_row = new Cell[board_size]{};
+        Cell *upper_ghost_row = new(std::align_val_t(64)) Cell[board_size]{};
+        Cell *lower_ghost_row = new(std::align_val_t(64)) Cell[board_size]{};
 
         int status = MPI_SUCCESS;
         // Send and receive upper row

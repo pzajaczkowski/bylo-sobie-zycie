@@ -11,7 +11,7 @@ enum BoardInitType {
 
 // Board class uses 1D array to store 2D board due to performance reasons
 class Board {
-   public:
+public:
     // Constructors and destructor
     Board(int width, int height);
 
@@ -29,7 +29,7 @@ class Board {
     // Mutators
     void setCell(int x, int y, Cell value);
 
-    void setBoard(Cell *newBoard);
+    void setBoard(Cell *new_board);
 
     void Init(BoardInitType type);
 
@@ -42,12 +42,11 @@ class Board {
 
     void updateBoard(const Cell *upperGhostRow, const Cell *lowerGhostRow);
 
-    Cell *updateBoardWithoutEdges();
+    void updateBoardWithoutEdges();
 
     void updateBoardEdges(
         const Cell *upperGhostRow,
-        const Cell *lowerGhostRow,
-        Cell *newBoard
+        const Cell *lowerGhostRow
     );
 
     // Static
@@ -55,10 +54,11 @@ class Board {
     static Board
     createSubBoard(const Board &board, int start_row, int rows_number);
 
-   private:
+private:
     int width;
     int height;
     alignas(64) Cell *board;
+    alignas(64) Cell *new_board;
 };
 
 #endif  // BOARD_HPP
